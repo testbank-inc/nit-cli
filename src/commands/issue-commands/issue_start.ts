@@ -15,23 +15,27 @@ export const builder = args;
 
 export const handler = async (argv: argsT): Promise<void> =>
     nit(argv, canonical, async (context) => {
-        const issueList = await context.notion.notionQuery.listIssuesInTodo();
-        const selected = await selectIssue(issueList, context.config.data.userName || '');
-        if (selected && selected.issue && selected.issue.pageId && selected.issue.notionIssueKey) {
-            const issue = selected.issue as NotionIssue;
-            const issueKey = issue.notionIssueKey!.plain_text || '';
-            context.git.pullBranch('origin', 'dev');
-            context.git.moveBranch('dev');
-            context.splog.info(`Pull & Checkout ${chalk.bold('dev')} branch...`);
-            context.git.moveBranch(issueKey);
-            context.splog.info(`Create & Checkout ${chalk.bold(issueKey)} branch...`);
-            context.git.pushBranch({ remote: 'origin', branchName: issueKey, forcePush: false, noVerify: false });
-            context.splog.info(`Push ${chalk.bold(issueKey)} branch to origin...`);
-            gtRepoInit(issueKey);
-            context.splog.info(`${chalk.green('gt repo init --trunk')} ${chalk.bold(issueKey)}`);
-            await context.notion.notionMutate.moveToInProgress(issue.pageId!, context.config.data.userId);
-            context.splog.info(
-                `🎫 ${chalk.bold(`${issue.notionIssueKey?.plain_text}`)} Issue is moved from ${chalk.yellow('Todo')} to ${chalk.green('InProgress')}.`,
-            );
+        try {
+            const issueList = await context.notion.notionQuery.listIssuesInTodo();
+            const selected = await selectIssue(issueList, context.config.data.userName || '');
+            if (selected && selected.issue && selected.issue.pageId && selected.issue.notionIssueKey) {
+                const issue = selected.issue as NotionIssue;
+                const issueKey = issue.notionIssueKey!.plain_text || '';
+                // context.git.pullBranch('origin', 'dev');
+                context.git.moveBranch('dev');
+                context.splog.info(`Pull & Checkout ${chalk.bold('dev')} branch...`);
+                context.git.moveBranch(issueKey);
+                context.splog.info(`Create & Checkout ${chalk.bold(issueKey)} branch...`);
+                context.git.pushBranch({ remote: 'origin', branchName: issueKey, forcePush: false, noVerify: false });
+                context.splog.info(`Push ${chalk.bold(issueKey)} branch to origin...`);
+                gtRepoInit(issueKey);
+                context.splog.info(`${chalk.green('gt repo init --trunk')} ${chalk.bold(issueKey)}`);
+                await context.notion.notionMutate.moveToInProgress(issue.pageId!, context.config.data.userId);
+                context.splog.info(
+                    `🎫 ${chalk.bold(`${issue.notionIssueKey?.plain_text}`)} Issue is moved from ${chalk.yellow('Todo')} to ${chalk.green('InProgress')}.`,
+                );
+            }
+        } catch (err) {
+            context.splog.error(err);
         }
     });
