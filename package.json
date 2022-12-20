@@ -1,5 +1,5 @@
 {
-  "name": "@testbank/nit-cli",
+  "name": "@testbank-inc/nit-cli",
   "version": "0.1.1",
   "license": "None",
   "main": "dist/src/index.js",
