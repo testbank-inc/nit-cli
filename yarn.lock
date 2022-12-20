@@ -131,9 +131,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testbank/nit-cli@workspace:.":
+"@testbank-inc/nit-cli@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@testbank/nit-cli@workspace:."
+  resolution: "@testbank-inc/nit-cli@workspace:."
   dependencies:
     "@notionhq/client": ^2.2.2
     "@types/fs-extra": ^9.0.13
