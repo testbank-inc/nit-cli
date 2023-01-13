@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 import { nit } from '../../lib/runner';
-import chalk from 'chalk';
 import { selectIssue } from '../../actions/issue_actions';
 import { NotionIssue } from '../../lib/notion/notion_type';
+import chalk from 'chalk';
 import { gtRepoInit } from '../../lib/gt/gt_repo_init';
 
 const args = {} as const;
@@ -30,7 +30,10 @@ export const handler = async (argv: argsT): Promise<void> =>
                 context.splog.info(`Push ${chalk.bold(issueKey)} branch to origin...`);
                 gtRepoInit(issueKey);
                 context.splog.info(`${chalk.green('gt repo init --trunk')} ${chalk.bold(issueKey)}`);
-                await context.notion.notionMutate.moveToInProgress(issue.pageId!, context.config.data.userId);
+                await context.notion.notionMutate.moveToInProgress(issue.pageId!, issue.notionAssignee || [], {
+                    personId: context.config.data.userId!,
+                    name: context.config.data.userName!,
+                });
                 context.splog.info(
                     `🎫 ${chalk.bold(`${issue.notionIssueKey?.plain_text}`)} Issue is moved from ${chalk.yellow('Todo')} to ${chalk.green('InProgress')}.`,
                 );

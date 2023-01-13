@@ -1,5 +1,5 @@
 import { Client as NotionClient } from '@notionhq/client';
-import { UpdatePageParameters } from '@notionhq/client/build/src/api-endpoints';
+import { UpdatePageParameters, UserObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export class NotionMutate {
     notionClient: NotionClient;
@@ -14,7 +14,7 @@ export class NotionMutate {
         await this.notionClient.pages.update(params);
     }
 
-    async moveToInProgress(pageId: string, personId?: string) {
+    async moveToInProgress(pageId: string, beforeAssignee: UserObjectResponse[], person?: { personId: string; name: string }) {
         const updateParams = {
             page_id: pageId,
             properties: {
@@ -25,14 +25,19 @@ export class NotionMutate {
                 },
             },
         } as UpdatePageParameters;
-        if (personId) {
+        if (person) {
+            let peopleIds: string[] = [];
+            if (beforeAssignee.length > 1) {
+                peopleIds = beforeAssignee.filter((user) => user.name !== person.name).map((user) => user.id) || [];
+            }
+            peopleIds.push(person.personId);
             const updatePersonProperty = {
                 Assignee: {
-                    people: [
-                        {
-                            id: personId,
-                        },
-                    ],
+                    people: peopleIds.map((p) => {
+                        return {
+                            id: p,
+                        };
+                    }),
                 },
             };
             updateParams.properties = { ...updateParams.properties, ...updatePersonProperty };

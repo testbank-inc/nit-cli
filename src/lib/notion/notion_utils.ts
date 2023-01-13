@@ -8,7 +8,7 @@ export function parseIssueFromNotion(page: PageObjectResponse) {
     if (page && page.properties) {
         const notionIssue: NotionIssue = {};
         const nKey = page.properties['Key'] && page.properties['Key']['rich_text']?.find(() => true);
-        const nAssignee = page.properties['Assignee'] && page.properties['Assignee']['people']?.find(() => true);
+        const nAssignee = (page.properties['Assignee'] && page.properties['Assignee']['people']) || [];
         const nStatus = page.properties['Status'] && page.properties['Status']['status'];
         const nSummary = page.properties['Summary'] && page.properties['Summary']['title']?.find(() => true);
         notionIssue.notionIssueKey = nKey;

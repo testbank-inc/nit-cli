@@ -3,7 +3,7 @@ import { RichTextItemResponse, UserObjectResponse } from '@notionhq/client/build
 export interface NotionIssue {
     pageId?: string;
     notionIssueKey?: RichTextItemResponse;
-    notionAssignee?: UserObjectResponse;
+    notionAssignee?: UserObjectResponse[];
     notionStatus?: {
         id: string;
         name: string;

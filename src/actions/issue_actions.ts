@@ -7,10 +7,18 @@ export async function selectIssue(issueList: Array<NotionIssue>, userName: strin
     const parser = (issue: NotionIssue, userName: string) => {
         const nKey = chalk.bold(issue.notionIssueKey?.plain_text) || chalk.red('NO KEY');
 
-        let nAssignee = issue.notionAssignee?.name || chalk.red('NO ASSIGNEE');
-        if (nAssignee === userName) {
-            nAssignee = chalk.green(nAssignee);
+        let nAssignee = issue.notionAssignee && issue.notionAssignee.length > 0 ? '' : chalk.red('NO ASSIGNEE');
+        let assigneeList = issue.notionAssignee || [];
+        const currUser = assigneeList.find((user) => user.name === userName);
+
+        if (currUser) {
+            assigneeList = assigneeList.filter((user) => user.name !== userName);
+            nAssignee = chalk.green(currUser.name) + ' ';
         }
+
+        assigneeList.forEach((user) => {
+            nAssignee += user.name + ' ';
+        });
         nAssignee = chalk.bold(nAssignee);
 
         const colorStatus = (status?: string) => {
@@ -31,7 +39,7 @@ export async function selectIssue(issueList: Array<NotionIssue>, userName: strin
             message: 'Select a issue',
             choices: issueList
                 .sort((a, b) => ((a.notionStatus?.name || '') > (b.notionStatus?.name || '') ? 1 : -1))
-                .sort((a) => (a.notionAssignee?.name === userName ? -1 : 1))
+                .sort((a) => (a.notionAssignee?.map((user) => user.name).indexOf(userName) !== -1 ? -1 : 1))
                 .map((issue) => {
                     return { title: parser(issue, userName), value: issue };
                 }),
