@@ -43,6 +43,12 @@ export class NotionQuery {
                         equals: '디자인 중',
                     },
                 },
+                {
+                    property: 'Status',
+                    status: {
+                        equals: '개발대기',
+                    },
+                },
             ],
         };
         const queryResponse = (await this.query({ filter: filterParams })) || [];
