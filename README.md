@@ -3,7 +3,7 @@
 ## 설치
 
 ```shell
-npm install -g @testbank/nit-cli
+npm install -g @testbank-inc/nit-cli
 ```
 
 ## 설정
